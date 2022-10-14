@@ -1,8 +1,9 @@
+import { gql, useQuery } from '@apollo/client';
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
-import { LaunchesData, LaunchSiteStatusData } from './types/launch';
+
 import Charts from './components/Charts';
 import Message from './components/Message';
+import { LaunchesData, LaunchSiteStatusData } from './types/launch';
 
 function App() {
   const { loading, error, data } = useQuery<LaunchesData>(GET_LAUNCH_STATUSES);

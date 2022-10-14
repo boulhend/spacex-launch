@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { LaunchSiteStatusData } from '../types/launch';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import { useEffect, useState } from 'react';
+
+import { LaunchSiteStatusData } from '../types/launch';
 
 type Props = {
   data: LaunchSiteStatusData;
