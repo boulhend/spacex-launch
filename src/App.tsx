@@ -1,54 +1,58 @@
-import './App.css';
-
-import React, { useState } from 'react';
-
-import logo from './logo.svg';
+import React from 'react';
+import { useQuery, gql } from '@apollo/client';
+import { LaunchesData, LaunchSiteStatusData } from './types/launch';
+import Charts from './components/Charts';
+import Message from './components/Message';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const { loading, error, data } = useQuery<LaunchesData>(GET_LAUNCH_STATUSES);
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="header">
-          🚀 Vite + React + Typescript 🤘 & <br />
-          Eslint 🔥+ Prettier
-        </p>
+  if (loading)
+    return (
+      <Message>
+        <p>Loading...</p>
+      </Message>
+    );
 
-        <div className="body">
-          <button onClick={() => setCount((count) => count + 1)}>
-            🪂 Click me : {count}
-          </button>
+  if (error)
+    return (
+      <Message>
+        <p className="text-red-700">Error :(</p>
+      </Message>
+    );
+  if (!data)
+    return (
+      <Message>
+        <p>No data</p>
+      </Message>
+    );
 
-          <p> Don&apos;t forgot to install Eslint and Prettier in Your Vscode.</p>
+  const launchSites: LaunchSiteStatusData = {};
 
-          <p>
-            Mess up the code in <code>App.tsx </code> and save the file.
-          </p>
-          <p>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-            {' | '}
-            <a
-              className="App-link"
-              href="https://vitejs.dev/guide/features.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Vite Docs
-            </a>
-          </p>
-        </div>
-      </header>
-    </div>
-  );
+  data.launches.forEach((launch) => {
+    const isSuccessLaunch = launch.launch_success;
+    if (!launchSites[launch?.launch_site?.site_name]) {
+      launchSites[launch?.launch_site?.site_name] = {
+        successLaunches: isSuccessLaunch ? 1 : 0,
+        failedLaunches: isSuccessLaunch ? 0 : 1,
+      };
+    } else {
+      const currentLaunch = launchSites[launch?.launch_site?.site_name];
+      isSuccessLaunch ? currentLaunch.successLaunches++ : currentLaunch.failedLaunches++;
+    }
+  });
+  return <Charts data={launchSites} />;
 }
 
 export default App;
+
+const GET_LAUNCH_STATUSES = gql`
+  query {
+    launches {
+      launch_success
+      launch_site {
+        site_name
+      }
+    }
+  }
+`;
