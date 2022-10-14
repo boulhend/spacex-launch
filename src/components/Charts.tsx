@@ -23,6 +23,8 @@ const Charts = ({ data }: Props) => {
     },
     title: {
       text: `${chart} Launch Statuses`,
+      margin: 40,
+      y: 40,
       style: { color: '#333333', fontSize: '1.2rem', fontWeight: 'bold' },
     },
     xAxis: {
